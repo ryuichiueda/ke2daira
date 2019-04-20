@@ -45,6 +45,9 @@ func readline () string {
 func ke2dairanization(line string) string {
   var first_head, first_tail, second_head, second_tail string
   slice := strings.Split(line, " ")
+  if len(slice) < 2 {
+	  os.Exit(1)
+  }
   for n, s := range slice {
     yomi := parse(s)
     if n == 0 {

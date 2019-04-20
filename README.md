@@ -1,5 +1,7 @@
 # ke2daira
 
+[![Build Status](https://travis-ci.org/ryuichiueda/ke2daira.svg?branch=master)](https://travis-ci.org/ryuichiueda/ke2daira)
+
 ## 何これ？
 
 「苗字と名前の最初の文字を入れ替えてみました」のトリビュート・コマンドです。

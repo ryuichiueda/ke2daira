@@ -1,3 +1,4 @@
+// license and copyright => see help()
 package main
 
 import (
@@ -7,6 +8,15 @@ import (
   "github.com/shogo82148/go-mecab"
   "strings"
 )
+
+const VERSION = "0.0.1"
+
+func help() {
+  fmt.Fprintf(os.Stderr, "KETSUDAIRA COMMAND %s\n", VERSION)
+  fmt.Fprintln(os.Stderr, "Copyright (C) 2019 Ryuichi Ueda.\n");
+  fmt.Fprintln(os.Stderr, "Released under the MIT license")
+  fmt.Fprintln(os.Stderr, "https://github.com/ryuichiueda/ke2daira")
+}
 
 func parse(input string) []rune {
   tagger, err := mecab.New(map[string]string{"output-format-type": "yomi"})
@@ -23,6 +33,11 @@ func parse(input string) []rune {
 }
 
 func main() {
+  if len(os.Args) > 1 {
+    help()
+    os.Exit(0)
+  }
+
   stdin := bufio.NewScanner(os.Stdin)
   for stdin.Scan(){
     str := stdin.Text()

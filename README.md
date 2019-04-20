@@ -33,3 +33,14 @@ $ go get github.com/shogo82148/go-mecab
 $ echo ポール マッカートニー | go run ke2daira.go
 マール ポッカートニー
 ```
+
+## インストール
+
+```
+$ export GOPATH="<ホームディレクトリなど>/.go"
+$ export GOBIN="$GOPATH/bin"
+$ go install
+$ PATH=$PATH:$GOPATH
+$ echo loopy potion | ke2daira
+poopy lotion
+```

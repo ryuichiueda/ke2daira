@@ -21,3 +21,15 @@ $ go get github.com/shogo82148/go-mecab
 $ echo デーモン 小暮閣下 | go run ke2daira.go
 コーモン デグレカッカ
 ```
+
+### macOS (brew)
+
+```
+$ brew install golang
+$ brew install mecab mecab-ipadic
+$ export CGO_LDFLAGS="`mecab-config --libs`"
+$ export CGO_CFLAGS="-I`mecab-config --inc-dir`"
+$ go get github.com/shogo82148/go-mecab
+$ echo ポール マッカートニー | go run ke2daira.go
+マール ポッカートニー
+```

@@ -10,6 +10,19 @@
 
 ## 使い方
 
+```
+$ echo デーモン 小暮閣下 | go run ke2daira.go
+コーモン デグレカッカ
+$ echo 阿寒 湖畔 温泉 | go run ke2daira.go 
+コカン アハン オンセン
+$ echo チェ ゲバラ | go run ke2daira.go 1.2 2.1
+ゲ チェバラ
+$ echo ゲバラ 焼肉の タレ | go run ke2daira.go 1.1 3.1
+タバラ ヤキニクノ ゲレ
+```
+
+## インストール方法
+
 ### Ubuntu 18.04
 
 ```
@@ -18,8 +31,6 @@ $ sudo apt install mecab mecab-ipadic-utf8 libmecab-dev
 $ export CGO_LDFLAGS="`mecab-config --libs`"
 $ export CGO_CFLAGS="-I`mecab-config --inc-dir`"
 $ go get github.com/shogo82148/go-mecab
-$ echo デーモン 小暮閣下 | go run ke2daira.go
-コーモン デグレカッカ
 ```
 
 ### macOS (brew)

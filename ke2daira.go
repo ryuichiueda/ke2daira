@@ -3,17 +3,20 @@ package main
 
 import (
   "os"
+  "strconv"
   "bufio"
   "fmt"
   "github.com/shogo82148/go-mecab"
   "strings"
 )
 
-const VERSION = "0.1.0"
+const VERSION = "0.2.0"
 
 func help() {
   fmt.Fprintf(os.Stderr, "KETSUDAIRA COMMAND %s\n", VERSION)
   fmt.Fprintln(os.Stderr, "Copyright (C) 2019 Ryuichi Ueda.");
+  fmt.Println()
+  fmt.Fprintln(os.Stderr, "usage: ke2daira [f1.n] [f2.m]");
   fmt.Println()
   fmt.Fprintln(os.Stderr, "Released under the MIT license")
   fmt.Fprintln(os.Stderr, "https://github.com/ryuichiueda/ke2daira")
@@ -42,34 +45,59 @@ func readline () string {
   }
 }
 
-func ke2dairanization(line string) string {
-  var first_head, first_tail, second_head, second_tail string
-  slice := strings.Split(line, " ")
+func toYomi(s []string) [][]rune {
+  var ans [][]rune;
+  for i := range s {
+    ans = append(ans, parse(s[i]) )
+  }
+  return ans
+}
+
+func toString(s [][]rune) string {
+  var tmp []string;
+  for i := range s {
+    tmp = append(tmp, string(s[i]) )
+  }
+  return strings.Join(tmp, " ")
+}
+
+func ke2dairanization(line string, f1 int, f1num int, f2 int, f2num int) string {
+  slice := toYomi( strings.Split(line, " ") )
   if len(slice) < 2 {
 	  os.Exit(1)
   }
-  for n, s := range slice {
-    yomi := parse(s)
-    if n == 0 {
-      first_head = string(yomi[:1])
-      first_tail = string(yomi[1:])
-    } else if n == 1 {
-      second_head = string(yomi[:1])
-      second_tail = string(yomi[1:])
-    } else {
-      second_tail += " " + string(yomi)
-    }
-  }
-  return second_head + first_tail + " " + first_head + second_tail
+
+  f1_head := string(slice[f1][:f1num])
+  f1_tail := string(slice[f1][f1num:])
+
+  f2_head := string(slice[f2][:f2num])
+  f2_tail := string(slice[f2][f2num:])
+
+  slice[f1] = []rune(f2_head + f1_tail)
+  slice[f2] = []rune(f1_head + f2_tail)
+
+  return toString(slice)
 }
 
 func main() {
-  if len(os.Args) > 1 {
+  switch len(os.Args) {
+  case 1:
+    line := readline()
+    result := ke2dairanization(line, 0, 1, 1, 1)
+    fmt.Println(result)
+  case 3:
+    f1 := strings.Split(os.Args[1], ".")
+    f2 := strings.Split(os.Args[2], ".")
+    f1pos, _ := strconv.Atoi(f1[0])
+    f2pos, _ := strconv.Atoi(f2[0])
+    f1num, _ := strconv.Atoi(f1[1])
+    f2num, _ := strconv.Atoi(f2[1])
+
+    line := readline()
+    result := ke2dairanization(line, f1pos-1, f1num, f2pos-1, f2num)
+    fmt.Println(result)
+  default:
     help()
     os.Exit(0)
   }
-
-  line := readline()
-  result := ke2dairanization(line)
-  fmt.Println(result)
 }

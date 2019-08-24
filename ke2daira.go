@@ -10,7 +10,7 @@ import (
   "strings"
 )
 
-const VERSION = "0.2.0"
+const VERSION = "0.2.1"
 
 func help() {
   fmt.Fprintf(os.Stderr, "KETSUDAIRA COMMAND %s\n", VERSION)
@@ -80,6 +80,7 @@ func ke2dairanization(line string, f1 int, f1num int, f2 int, f2num int) string 
 }
 
 func main() {
+  var f1num, f2num int
   switch len(os.Args) {
   case 1:
     line := readline()
@@ -90,8 +91,17 @@ func main() {
     f2 := strings.Split(os.Args[2], ".")
     f1pos, _ := strconv.Atoi(f1[0])
     f2pos, _ := strconv.Atoi(f2[0])
-    f1num, _ := strconv.Atoi(f1[1])
-    f2num, _ := strconv.Atoi(f2[1])
+
+    if len(f1) > 1 {
+      f1num, _ = strconv.Atoi(f1[1])
+    } else {
+      f1num = 1
+    }
+    if len(f2) > 1 {
+      f2num, _ = strconv.Atoi(f2[1])
+    } else {
+      f2num = 1
+    }
 
     line := readline()
     result := ke2dairanization(line, f1pos-1, f1num, f2pos-1, f2num)

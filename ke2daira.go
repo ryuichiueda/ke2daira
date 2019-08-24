@@ -9,7 +9,7 @@ import (
   "strings"
 )
 
-const VERSION = "0.0.1"
+const VERSION = "0.1.0"
 
 func help() {
   fmt.Fprintf(os.Stderr, "KETSUDAIRA COMMAND %s\n", VERSION)

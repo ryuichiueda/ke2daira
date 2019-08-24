@@ -53,10 +53,11 @@ func ke2dairanization(line string) string {
     if n == 0 {
       first_head = string(yomi[:1])
       first_tail = string(yomi[1:])
-    }
-    if n == 1 {
+    } else if n == 1 {
       second_head = string(yomi[:1])
       second_tail = string(yomi[1:])
+    } else {
+      second_tail += " " + string(yomi)
     }
   }
   return second_head + first_tail + " " + first_head + second_tail

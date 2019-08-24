@@ -10,7 +10,7 @@ import (
   "strings"
 )
 
-const VERSION = "0.2.1"
+const VERSION = "0.2.2"
 
 func help() {
   fmt.Fprintf(os.Stderr, "KETSUDAIRA COMMAND %s\n", VERSION)
@@ -79,32 +79,30 @@ func ke2dairanization(line string, f1 int, f1num int, f2 int, f2num int) string 
   return toString(slice)
 }
 
+func paramToNums (p string) (int, int) {
+  f1 := strings.Split(p, ".")
+  f1pos, _ := strconv.Atoi(f1[0])
+
+  if len(f1) > 1 {
+    f1num, _ := strconv.Atoi(f1[1])
+    return f1pos-1, f1num
+  } else {
+    return f1pos-1, 1
+  }
+}
+
 func main() {
-  var f1num, f2num int
   switch len(os.Args) {
   case 1:
     line := readline()
     result := ke2dairanization(line, 0, 1, 1, 1)
     fmt.Println(result)
   case 3:
-    f1 := strings.Split(os.Args[1], ".")
-    f2 := strings.Split(os.Args[2], ".")
-    f1pos, _ := strconv.Atoi(f1[0])
-    f2pos, _ := strconv.Atoi(f2[0])
-
-    if len(f1) > 1 {
-      f1num, _ = strconv.Atoi(f1[1])
-    } else {
-      f1num = 1
-    }
-    if len(f2) > 1 {
-      f2num, _ = strconv.Atoi(f2[1])
-    } else {
-      f2num = 1
-    }
+    f1pos, f1num := paramToNums(os.Args[1])
+    f2pos, f2num := paramToNums(os.Args[2])
 
     line := readline()
-    result := ke2dairanization(line, f1pos-1, f1num, f2pos-1, f2num)
+    result := ke2dairanization(line, f1pos, f1num, f2pos, f2num)
     fmt.Println(result)
   default:
     help()

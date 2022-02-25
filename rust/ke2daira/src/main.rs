@@ -10,12 +10,16 @@ fn read_line() -> String {
     line
 }
 
+fn tokenize(line: String) -> Vec<String> {
+    line.trim()
+        .split(" ")
+        .map(String::from)
+        .collect()
+}
+
 fn main() {
     let line = read_line();
-    let words: Vec<&str> = line
-        .trim()
-        .split(" ")
-        .collect();
+    let words = tokenize(line);
 
     println!("{:?}", words);
 }

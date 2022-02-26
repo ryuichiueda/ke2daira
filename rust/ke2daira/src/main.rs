@@ -111,6 +111,6 @@ fn ke2daira_transform1() -> () {
 #[test]
 fn yomi_test1() -> () {
     let w = solve_mecab_dict_width();
-    let words = to_yomi("松平健は明日も元気。".to_string(), w);
-    assert_eq!("マツダイラケンハアシタモゲンキ。".to_string(), words);
+    let words = to_yomi("松平さんは明日も元気。".to_string(), w);
+    assert_eq!("マツダイラサンハアシタモゲンキ。".to_string(), words);
 }

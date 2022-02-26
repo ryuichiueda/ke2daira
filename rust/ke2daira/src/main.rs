@@ -1,6 +1,8 @@
 extern crate mecab;
+use mecab::Tagger;
 
 use std::io;
+use std::env;
 
 fn read_line() -> String {
     let mut line = String::new();
@@ -39,9 +41,44 @@ fn transform(words: Vec<String>) -> String {
     ans
 }
 
+fn to_yomi(word: String) -> String {
+    let tagger = Tagger::new(""); 
+    let result: Vec<String> = tagger
+        .parse_str(word)
+        .split(",")
+        .map(String::from)
+        .collect();
+
+    let mut ans = "".to_string();
+    for (i, r) in result.iter().enumerate() {
+        if i%10 == 7 {
+            ans.push_str(r);
+        }
+    };
+
+    ans
+}
+
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    let mut m_flag = false;
+    for a in args {
+        if a == "-m".to_string() {
+            m_flag = true;
+        };
+    };
+
     let line = read_line();
-    let words = tokenize(line);
+    let words_org = tokenize(line);
+    let mut words: Vec<String> = Vec::new();
+
+    if m_flag {
+        for w in words_org { 
+            words.push(to_yomi( w.to_string()) ); 
+        }
+    }else{
+        words = words_org;
+    }
 
     match words.len() {
         0 => (),
@@ -54,7 +91,13 @@ fn main() {
 //TEST PART
 /////////////////////////////////////
 #[test]
-fn test1() -> () {
+fn ke2daira_transform1() -> () {
     let words = tokenize("まつだいら けん".to_string());
     assert_eq!("けつだいら まん", transform(words));
+}
+
+#[test]
+fn yomi_test1() -> () {
+    let words = to_yomi("松平健は明日も元気。".to_string());
+    assert_eq!("マツダイラケンハアシタモゲンキ。".to_string(), words);
 }

@@ -19,25 +19,38 @@ fn tokenize(line: String) -> Vec<String> {
         .collect()
 }
 
-fn transform(words: Vec<String>) -> String {
-    let head1 = match words[0].chars().nth(0) {
+fn transform(words: Vec<String>, w1_pos: usize, w2_pos: usize) -> String {
+    let head1 = match words[w1_pos].chars().nth(0) {
         Some(x) => x,
         None    => panic!("Empty string"),
     };
 
-    let head2 = match words[1].chars().nth(0) {
+    let head2 = match words[w2_pos].chars().nth(0) {
         Some(x) => x,
         None    => panic!("Empty string"),
     };
 
-    let tail1 = words[0].chars().skip(1).collect::<String>();
-    let tail2 = words[1].chars().skip(1).collect::<String>();
+    let tail1 = words[w1_pos].chars().skip(1).collect::<String>();
+    let tail2 = words[w2_pos].chars().skip(1).collect::<String>();
 
-    let mut ans = format!("{}{} {}{}", head2, tail1, head1, tail2);
-    for w in &words[2..] {
-        ans.push_str(" ");
-        ans.push_str(w);
-    };
+    let w1 = format!("{}{}", head2, tail1);
+    let w2 = format!("{}{}", head1, tail2);
+
+    let mut ans: String = "".to_string();
+    for (i, w) in words.iter().enumerate() {
+        if i == w1_pos {
+            ans.push_str(&w1);
+        }else if i == w2_pos {
+            ans.push_str(&w2);
+        }else{
+            ans.push_str(w);
+        }
+
+        if i != words.len() - 1 {
+            ans.push_str(" ");
+        }
+    }
+
     ans
 }
 
@@ -73,9 +86,29 @@ fn to_yomi(word: String, dic_length: usize) -> String {
 fn main() {
     let args: Vec<String> = env::args().collect();
     let mut m_flag = false;
+
+    let mut first_changed = false;
+    let mut first = 0;
+    let mut second = 1;
+
     for a in args {
         if a == "-m".to_string() {
             m_flag = true;
+            continue;
+        };
+
+        let head = match a.chars().nth(0) {
+            Some(x) => x,
+            None    => panic!("Empty argument"),
+        };
+
+        if head >= '1' && head <= '9' {
+            if first_changed {
+                second = head as usize - 49;
+            }else{
+                first = head as usize - 49;
+                first_changed = true;
+            }
         };
     };
 
@@ -95,7 +128,7 @@ fn main() {
     match words.len() {
         0 => (),
         1 => println!("{}", words[0]),
-        _ => println!("{}", transform(words)),
+        _ => println!("{}", transform(words, first, second)),
     };
 }
 
@@ -105,7 +138,13 @@ fn main() {
 #[test]
 fn ke2daira_transform1() -> () {
     let words = tokenize("まつだいら けん".to_string());
-    assert_eq!("けつだいら まん", transform(words));
+    assert_eq!("けつだいら まん", transform(words, 0, 1));
+}
+
+#[test]
+fn ke2daira_transform2() -> () {
+    let words = tokenize("まつだいら けん さんじょう".to_string());
+    assert_eq!("まつだいら さん けんじょう", transform(words, 1, 2));
 }
 
 #[test]

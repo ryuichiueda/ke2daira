@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup
-      run: apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 
+      run: sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 
     - name: Build
       run: cd rust/ke2daira && cargo build --verbose
     - name: Run tests

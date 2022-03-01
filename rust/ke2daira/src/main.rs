@@ -19,7 +19,7 @@ fn tokenize(line: String) -> Vec<String> {
         .collect()
 }
 
-fn transform(words: Vec<String>, w1_pos: usize, w2_pos: usize) -> String {
+fn transform(words: Vec<String>, (w1_pos, w2_pos): (usize, usize) ) -> String {
     let head1 = match words[w1_pos].chars().nth(0) {
         Some(x) => x,
         None    => panic!("Empty string"),
@@ -83,7 +83,7 @@ fn to_yomi(word: String, dic_length: usize) -> String {
     ans
 }
 
-fn use_mecab(args :&Vec<String>) -> bool {
+fn use_mecab(args: &Vec<String>) -> bool {
     for a in args {
         if *a == "-m".to_string() {
             return true;
@@ -92,29 +92,35 @@ fn use_mecab(args :&Vec<String>) -> bool {
     false
 }
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    let mecab_flag = use_mecab(&args);
-
+fn set_positions(args: &Vec<String>) -> (usize, usize) {
     let mut first_changed = false;
     let mut first = 0;
-    let mut second = 1;
-    for a in args {
 
+    for a in args {
         let head = match a.chars().nth(0) {
             Some(x) => x,
-            None    => panic!("Empty argument"),
+            None    => '0',
         };
 
         if head >= '1' && head <= '9' {
             if first_changed {
-                second = head as usize - 49;
+                let second = head as usize - 49;
+                return (first, second);
             }else{
                 first = head as usize - 49;
                 first_changed = true;
             }
         };
     };
+    (0, 1)
+}
+
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let mecab_flag = use_mecab(&args);
+    let fields = set_positions(&args);
 
     let line = read_line();
     let words_org = tokenize(line);
@@ -132,7 +138,7 @@ fn main() {
     match words.len() {
         0 => (),
         1 => println!("{}", words[0]),
-        _ => println!("{}", transform(words, first, second)),
+        _ => println!("{}", transform(words, fields)),
     };
 }
 
@@ -142,13 +148,13 @@ fn main() {
 #[test]
 fn ke2daira_transform1() -> () {
     let words = tokenize("まつだいら けん".to_string());
-    assert_eq!("けつだいら まん", transform(words, 0, 1));
+    assert_eq!("けつだいら まん", transform(words, (0, 1) ));
 }
 
 #[test]
 fn ke2daira_transform2() -> () {
     let words = tokenize("まつだいら けん さんじょう".to_string());
-    assert_eq!("まつだいら さん けんじょう", transform(words, 1, 2));
+    assert_eq!("まつだいら さん けんじょう", transform(words, (1, 2) ));
 }
 
 #[test]

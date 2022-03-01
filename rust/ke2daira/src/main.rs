@@ -83,19 +83,23 @@ fn to_yomi(word: String, dic_length: usize) -> String {
     ans
 }
 
+fn use_mecab(args :&Vec<String>) -> bool {
+    for a in args {
+        if *a == "-m".to_string() {
+            return true;
+        };
+    };
+    false
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut m_flag = false;
+    let mecab_flag = use_mecab(&args);
 
     let mut first_changed = false;
     let mut first = 0;
     let mut second = 1;
-
     for a in args {
-        if a == "-m".to_string() {
-            m_flag = true;
-            continue;
-        };
 
         let head = match a.chars().nth(0) {
             Some(x) => x,
@@ -116,7 +120,7 @@ fn main() {
     let words_org = tokenize(line);
     let mut words: Vec<String> = Vec::new();
 
-    if m_flag {
+    if mecab_flag {
         let width = solve_mecab_dict_width();
         for w in words_org { 
             words.push(to_yomi( w.to_string(), width)); 

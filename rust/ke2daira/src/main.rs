@@ -123,17 +123,17 @@ fn main() {
     let fields = set_positions(&args);
 
     let line = read_line();
-    let words_org = tokenize(line);
-    let mut words: Vec<String> = Vec::new();
 
-    if mecab_flag {
+    let words = if mecab_flag {
+        let mut yomi_words: Vec<String> = Vec::new();
         let width = solve_mecab_dict_width();
-        for w in words_org { 
-            words.push(to_yomi( w.to_string(), width)); 
+        for w in tokenize(line) { 
+            yomi_words.push(to_yomi( w.to_string(), width)); 
         }
+        yomi_words
     }else{
-        words = words_org;
-    }
+        tokenize(line)
+    };
 
     match words.len() {
         0 => (),

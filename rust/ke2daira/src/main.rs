@@ -19,19 +19,24 @@ fn tokenize(line: String) -> Vec<String> {
         .collect()
 }
 
-fn transform(words: Vec<String>, (w1_pos, w2_pos): (usize, usize) ) -> String {
-    let head1 = match words[w1_pos].chars().nth(0) {
-        Some(x) => x,
-        None    => panic!("Empty string"),
-    };
+fn slice_pos(word: &String, pos: usize) -> usize {
+    match word.char_indices().nth(pos) {
+        Some(x) => Some(x).unwrap().0, 
+        _       => word.len(),
+    }
 
-    let head2 = match words[w2_pos].chars().nth(0) {
-        Some(x) => x,
-        None    => panic!("Empty string"),
-    };
+}
 
-    let tail1 = words[w1_pos].chars().skip(1).collect::<String>();
-    let tail2 = words[w2_pos].chars().skip(1).collect::<String>();
+fn transform(words: Vec<String>,
+            (w1_pos, w2_pos, w1_len, w2_len): (usize, usize, usize, usize) 
+    ) -> String {
+    let w1_spos = slice_pos(&words[w1_pos], w1_len);
+    let head1 = &words[w1_pos][..w1_spos];
+    let tail1 = &words[w1_pos][w1_spos..];
+
+    let w2_spos = slice_pos(&words[w2_pos], w2_len);
+    let head2 = &words[w2_pos][..w2_spos];
+    let tail2 = &words[w2_pos][w2_spos..];
 
     let w1 = format!("{}{}", head2, tail1);
     let w2 = format!("{}{}", head1, tail2);
@@ -92,7 +97,7 @@ fn use_mecab(args: &Vec<String>) -> bool {
     false
 }
 
-fn set_positions(args: &Vec<String>) -> (usize, usize) {
+fn set_positions(args: &Vec<String>) -> (usize, usize, usize, usize) {
     let mut first_changed = false;
     let mut first = 0;
 
@@ -105,14 +110,14 @@ fn set_positions(args: &Vec<String>) -> (usize, usize) {
         if head >= '1' && head <= '9' {
             if first_changed {
                 let second = head as usize - 49;
-                return (first, second);
+                return (first, second, 1, 1);
             }else{
                 first = head as usize - 49;
                 first_changed = true;
             }
         };
     };
-    (0, 1)
+    (0, 1, 1, 1)
 }
 
 
@@ -123,16 +128,17 @@ fn main() {
     let fields = set_positions(&args);
 
     let line = read_line();
+    let raw_words = tokenize(line);
 
     let words = if mecab_flag {
         let mut yomi_words: Vec<String> = Vec::new();
         let width = solve_mecab_dict_width();
-        for w in tokenize(line) { 
+        for w in raw_words { 
             yomi_words.push(to_yomi( w.to_string(), width)); 
         }
         yomi_words
     }else{
-        tokenize(line)
+        raw_words
     };
 
     match words.len() {
@@ -148,13 +154,28 @@ fn main() {
 #[test]
 fn ke2daira_transform1() -> () {
     let words = tokenize("まつだいら けん".to_string());
-    assert_eq!("けつだいら まん", transform(words, (0, 1) ));
+    assert_eq!("けつだいら まん", transform(words, (0, 1, 1, 1) ));
 }
 
 #[test]
 fn ke2daira_transform2() -> () {
     let words = tokenize("まつだいら けん さんじょう".to_string());
-    assert_eq!("まつだいら さん けんじょう", transform(words, (1, 2) ));
+    assert_eq!("まつだいら さん けんじょう", transform(words, (1, 2, 1, 1) ));
+}
+
+#[test]
+fn ke2daira_transform3() -> () {
+    let words = tokenize("まつだいら けん".to_string());
+    assert_eq!("まつだいら けん", transform(words, (0, 1, 0, 0) ));
+}
+
+#[test]
+fn ke2daira_transform4() -> () {
+    let words = tokenize("まつだいら けん".to_string());
+    assert_eq!("けんだいら まつ", transform(words, (0, 1, 2, 2) ));
+
+    let words = tokenize("まつだいら けんさん".to_string());
+    assert_eq!("けだいら まつんさん", transform(words, (0, 1, 2, 1) ));
 }
 
 #[test]

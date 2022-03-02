@@ -4,6 +4,21 @@ use mecab::Tagger;
 use std::io;
 use std::env;
 
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
+fn check_help_flag(args: &Vec<String>) -> () {
+    if args.len() > 1 {
+        if args[1] == "-h" {
+            eprintln!("ke2daira {}", VERSION);
+            eprintln!("Copyright (C) 2022 Ryuichi ueda\n");
+            eprintln!("usage: ke2daira [-m] [f1.n] [f2.n]\n");
+            eprintln!("Released under the MIT license");
+            eprintln!("https://github.com/ryuichiueda/ke2daira");
+            std::process::exit(1);
+        }
+    }
+}
+
 fn read_line() -> String {
     let mut line = String::new();
     io::stdin()
@@ -164,10 +179,10 @@ fn set_positions(args: &Vec<String>) -> (usize, usize, usize, usize) {
     (0, 1, 1, 1)
 }
 
-
 fn main() {
     let args: Vec<String> = env::args().collect();
 
+    check_help_flag(&args);
     let mecab_flag = use_mecab(&args);
     let fields = set_positions(&args);
 

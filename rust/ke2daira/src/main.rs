@@ -97,9 +97,26 @@ fn use_mecab(args: &Vec<String>) -> bool {
     false
 }
 
+fn solve_length(arg: String) -> usize {
+    let delim = match arg.chars().nth(1) {
+        Some(x) => x,
+        None    => return 1,
+    };
+
+    if delim != '.' {
+        panic!("Argument error");
+    };
+
+    match arg.chars().nth(2) {
+        Some(x) => x as usize - 48,
+        None    => panic!("No word length"),
+    }
+}
+
 fn set_positions(args: &Vec<String>) -> (usize, usize, usize, usize) {
     let mut first_changed = false;
     let mut first = 0;
+    let mut first_length = 1;
 
     for a in args {
         let head = match a.chars().nth(0) {
@@ -110,9 +127,11 @@ fn set_positions(args: &Vec<String>) -> (usize, usize, usize, usize) {
         if head >= '1' && head <= '9' {
             if first_changed {
                 let second = head as usize - 49;
-                return (first, second, 1, 1);
+                let second_length = solve_length(a.to_string());
+                return (first, second, first_length, second_length);
             }else{
                 first = head as usize - 49;
+                first_length = solve_length(a.to_string());
                 first_changed = true;
             }
         };

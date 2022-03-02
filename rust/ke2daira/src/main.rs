@@ -59,18 +59,8 @@ fn transform(words: Vec<String>,
     ans
 }
 
-fn solve_mecab_dict_width() -> usize {
-    let tagger = Tagger::new(""); 
-    let result: Vec<String> = tagger
-        .parse_str("あ")
-        .split(",")
-        .map(String::from)
-        .collect();
-
-    result.len() - 1
-}
-
-fn to_yomi(word: String, dic_length: usize) -> String {
+fn _to_yomi(word: String, dic_length: usize) -> String {
+    println!("{:?}", word);
     let tagger = Tagger::new(""); 
     let result: Vec<String> = tagger
         .parse_str(word)
@@ -78,13 +68,48 @@ fn to_yomi(word: String, dic_length: usize) -> String {
         .map(String::from)
         .collect();
 
+    println!("{:?}", result);
+
     let mut ans = "".to_string();
+    let mut org = "";
     for (i, r) in result.iter().enumerate() {
+        if i%dic_length == 0 {
+            org = r; 
+        };
+
         if i%dic_length == 7 {
-            ans.push_str(r);
+            if r == "*"{
+                ans.push_str(org);
+            }else{
+                ans.push_str(r);
+            }
         }
     };
 
+    ans
+}
+
+fn to_yomi(word: String) -> String {
+    let tagger = Tagger::new(""); 
+    let result_lines: Vec<String> = tagger
+        .parse_str(word.clone())
+        .split("\n")
+        .map(String::from)
+        .collect();
+
+    let mut ans = "".to_string();
+
+    for line in result_lines {
+        let tokens: Vec<String> = line.split(",")
+                     .map(String::from)
+                     .collect();
+
+        if tokens.len() > 7 {
+            ans.push_str(&tokens[7]);
+        }else if tokens.len() > 1 {
+            ans.push_str(&word);
+        };
+    }
     ans
 }
 
@@ -151,9 +176,8 @@ fn main() {
 
     let words = if mecab_flag {
         let mut yomi_words: Vec<String> = Vec::new();
-        let width = solve_mecab_dict_width();
         for w in raw_words { 
-            yomi_words.push(to_yomi( w.to_string(), width)); 
+            yomi_words.push(to_yomi( w.to_string())); 
         }
         yomi_words
     }else{
@@ -199,7 +223,12 @@ fn ke2daira_transform4() -> () {
 
 #[test]
 fn yomi_test1() -> () {
-    let w = solve_mecab_dict_width();
-    let words = to_yomi("松平さんは明日も元気。".to_string(), w);
+    let words = to_yomi("松平さんは明日も元気。".to_string());
     assert_eq!("マツダイラサンハアシタモゲンキ。".to_string(), words);
+}
+
+#[test]
+fn yomi_test2() -> () {
+    let words = to_yomi("ゲバラ".to_string());
+    assert_eq!("ゲバラ".to_string(), words);
 }

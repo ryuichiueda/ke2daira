@@ -19,6 +19,6 @@ jobs:
     - name: Setup
       run: sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 
     - name: Build
-      run: cd rust/ke2daira && cargo build --verbose
+      run: cargo build --verbose
     - name: Run tests
-      run: cd rust/ke2daira && cargo test --verbose
+      run: cargo test --verbose

@@ -1,7 +1,5 @@
 # ke2daira
 
-[![Build Status](https://travis-ci.org/ryuichiueda/ke2daira.svg?branch=master)](https://travis-ci.org/ryuichiueda/ke2daira)
-
 ## 何これ？
 
 「苗字と名前の最初の文字を入れ替えてみました」のトリビュート・コマンドです。
@@ -11,47 +9,22 @@
 ## 使い方
 
 ```
-$ echo デーモン 小暮閣下 | go run ke2daira.go
-コーモン デグレカッカ
-$ echo 阿寒 湖畔 温泉 | go run ke2daira.go 
+$ echo あとう かい | ke2daira
+かとう あい
+$ echo 阿寒 湖畔 温泉 | ke2daira -m
 コカン アハン オンセン
-$ echo チェ ゲバラ | go run ke2daira.go 1.2 2.1
+$ echo デーモン 小暮閣下 | ke2daira -m
+コーモン デグレカッカ
+$ echo チェ ゲバラ | ke2daira 1.2 2.1
 ゲ チェバラ
-$ echo ゲバラ 焼肉の タレ | go run ke2daira.go 1.1 3.1
+$ echo ゲバラ 焼肉の タレ | ke2daira -m 1.1 3.1
 タバラ ヤキニクノ ゲレ
 ```
 
 ## インストール方法
 
-### Ubuntu 18.04
-
 ```
-$ sudo apt install golang
-$ sudo apt install mecab mecab-ipadic-utf8 libmecab-dev
-$ export CGO_LDFLAGS="`mecab-config --libs`"
-$ export CGO_CFLAGS="-I`mecab-config --inc-dir`"
-$ go get github.com/shogo82148/go-mecab
-```
-
-### macOS (brew)
-
-```
-$ brew install golang
-$ brew install mecab mecab-ipadic
-$ export CGO_LDFLAGS="`mecab-config --libs`"
-$ export CGO_CFLAGS="-I`mecab-config --inc-dir`"
-$ go get github.com/shogo82148/go-mecab
-$ echo ポール マッカートニー | go run ke2daira.go
-マール ポッカートニー
-```
-
-## インストール
-
-```
-$ export GOPATH="<ホームディレクトリなど>/.go"
-$ export GOBIN="$GOPATH/bin"
-$ go install
-$ PATH=$PATH:$GOPATH
-$ echo loopy potion | ke2daira
-poopy lotion
+$ sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8 
+$ cargo build --release
+$ sudo cp target/release/ke2daira <どこかパスの通ったディレクトリ>
 ```

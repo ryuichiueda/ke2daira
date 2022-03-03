@@ -74,36 +74,6 @@ fn transform(words: Vec<String>,
     ans
 }
 
-fn _to_yomi(word: String, dic_length: usize) -> String {
-    println!("{:?}", word);
-    let tagger = Tagger::new(""); 
-    let result: Vec<String> = tagger
-        .parse_str(word)
-        .split(",")
-        .map(String::from)
-        .collect();
-
-    println!("{:?}", result);
-
-    let mut ans = "".to_string();
-    let mut org = "";
-    for (i, r) in result.iter().enumerate() {
-        if i%dic_length == 0 {
-            org = r; 
-        };
-
-        if i%dic_length == 7 {
-            if r == "*"{
-                ans.push_str(org);
-            }else{
-                ans.push_str(r);
-            }
-        }
-    };
-
-    ans
-}
-
 fn to_yomi(word: String) -> String {
     let tagger = Tagger::new(""); 
     let result_lines: Vec<String> = tagger
@@ -187,17 +157,11 @@ fn main() {
     let fields = set_positions(&args);
 
     let line = read_line();
-    let raw_words = tokenize(line);
-
-    let words = if mecab_flag {
-        let mut yomi_words: Vec<String> = Vec::new();
-        for w in raw_words { 
-            yomi_words.push(to_yomi( w.to_string())); 
-        }
-        yomi_words
-    }else{
-        raw_words
-    };
+    let words: Vec<_> = tokenize(line)
+        .iter()
+        .map(String::to_string)
+        .map(|w| if mecab_flag{to_yomi(w)}else{w})
+        .collect();
 
     match words.len() {
         0 => (),

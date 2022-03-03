@@ -42,37 +42,22 @@ fn slice_pos(word: &String, pos: usize) -> usize {
 
 }
 
-fn transform(words: Vec<String>,
+
+fn transform(mut words: Vec<String>,
             (w1_pos, w2_pos, w1_len, w2_len): (usize, usize, usize, usize) 
     ) -> String {
-    let w1_spos = slice_pos(&words[w1_pos], w1_len);
-    let head1 = &words[w1_pos][..w1_spos];
-    let tail1 = &words[w1_pos][w1_spos..];
+    let w1 = &words[w1_pos].clone();
+    let w2 = &words[w2_pos].clone();
 
-    let w2_spos = slice_pos(&words[w2_pos], w2_len);
-    let head2 = &words[w2_pos][..w2_spos];
-    let tail2 = &words[w2_pos][w2_spos..];
+    let w1_spos = slice_pos(&w1, w1_len);
+    let w2_spos = slice_pos(&w2, w2_len);
 
-    let w1 = format!("{}{}", head2, tail1);
-    let w2 = format!("{}{}", head1, tail2);
+    words[w1_pos] = format!("{}{}", &w2[..w2_spos], &w1[w1_spos..]);
+    words[w2_pos] = format!("{}{}", &w1[..w1_spos], &w2[w2_spos..]);
 
-    let mut ans: String = "".to_string();
-    for (i, w) in words.iter().enumerate() {
-        if i == w1_pos {
-            ans.push_str(&w1);
-        }else if i == w2_pos {
-            ans.push_str(&w2);
-        }else{
-            ans.push_str(w);
-        }
-
-        if i != words.len() - 1 {
-            ans.push_str(" ");
-        }
-    }
-
-    ans
+    words.join(" ")
 }
+
 
 fn to_yomi(word: String) -> String {
     let tagger = Tagger::new(""); 
